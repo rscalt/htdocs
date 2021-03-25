@@ -23,7 +23,7 @@ foreach ($test_types as $type => $value) {
 }
 
 
-function check_size($arg)
+function check_size($arg) : string
 {
     if (is_int($arg) or is_double($arg)) {
         if ($arg > 170)

@@ -1,2 +1,2 @@
 <?php
-false
+$_SERVER[PHP_SELF]
