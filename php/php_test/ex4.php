@@ -26,7 +26,8 @@ function HowManyBetween($arg1, $arg2)  : int|float|string //возвращает
 };
 
 
-$arg1 = true;
+$arg1 = 5;
 $arg2 = 3;
 
+echo "The Result is: ";
 echo HowManyBetween($arg1, $arg2);

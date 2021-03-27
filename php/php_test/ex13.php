@@ -7,51 +7,137 @@
     При повторном нажатие, если товар уже в корзине, то его количество должно увеличиваться на 1. 
     Снизу сделать вывод, что уже есть в корзине. 
 -->
+<?php //классы
+    class Product
+    {
+        protected $id;
+        protected $price;
+        protected $name;
+
+        public function showProduct()
+        {
+            print "\n";
+            print "$this->id. ";
+            print "$this->name - ";
+            print "$this->price";
+        }
+
+        protected static function getID() //абстрактный метод
+        {
+            static $last_id = 1; //сохраняем значение ID между вызовами
+            $next_last_id = $last_id++;
+            return $next_last_id;
+        }
+
+        //абстрактный метод-конструктор
+        public static function createProduct(string $new_name, float $new_price)
+        {
+            $instance = new Product;
+            if (isset($instance)) {
+                //увеличиваем id только если объект создан успешно
+                $new_id = Product::getID();
+                $instance->id = $new_id;
+                $instance->name = $new_name;
+                $instance->price = $new_price;
+                return $instance;
+            } else return 0;
+        }
+    }
+
+    class Basket
+    {
+        public $buy_arr = array(
+                    'id' => array(),
+                    'count' => array(),
+        );
+
+        public static function createBasket()
+        {
+            $instance = new Basket;
+            if (isset($instance)) {
+                $instance->buy_arr['id']=5;
+                $instance->buy_arr['count']=14;
+                return $instance;
+            }
+            else return 0;
+        }
+
+        protected function add_product()
+        {
+            $basket['id'][] = $_POST['product_id'];
+            $basket['count'][]++;
+        }
+
+        public function showBasket()
+        {
+            foreach($this->buy_arr as $key => $value)
+            print "\n{$key}_{$value}";
+        }
+
+    }
+?>
+
+<?php //код страницы
+
+    //ручная БД с продуктамии
+    $prod_db = array(
+        'bread' => array(
+            Product::createProduct('bread1', 11),
+            Product::createProduct('bread2', 22),
+        ),
+
+        'milk'  => array(
+            Product::createProduct('milk1', 33),
+            Product::createProduct('milk2', 44),
+            Product::createProduct('milk3', 55)
+        ),
+
+        'sugar' => array(
+            Product::createProduct('sugar1', 66),
+        ),
+    );
+    //новая корзина
+    $basket = Basket::createBasket();
+    //содержимое новой корзины
+    $basket->showBasket();
+
+    
+
+?>
+
+
+
 
 <?php
-
-global $last_id;
-$last_id = 0;
-
-class Product
-{
-    private $id;
-    private $price;
-    private $name;
-
-    public function showProduct()
-    {
-    print "\n $this->id";
-    print "\n $this->name";
-    print "\n $this->price";
-    }
-
-    //конструктор, но не конструктор
-    public static function createProduct(string $new_name, float $new_price)
-    {
-        $instance = new Product;
-        $instance->id = $GLOBALS['last_id']++;
-        $instance->name = $new_name;
-        $instance->price = $new_price;
-        return $instance;
-    }
-}
-
-$prod_arr = array(
-    'bread' => array(Product::createProduct('bread1_test_name', random_int(0,100)),
-                     Product::createProduct('bread2_test_name', random_int(0, 100))),
+    session_start();
     
-    'milk'  => array(Product::createProduct('milk1_test_name', random_int(0, 100)), 
-                     Product::createProduct('milk2_test_name', random_int(0, 100)), 
-                     Product::createProduct('milk1_test_name', random_int(0, 100))),
-    
-    'sugar' => array(Product::createProduct('sugar1_test_name', random_int(0, 100)))
-);
+    foreach ($prod_db as $group => $object_array) :
+        foreach ($object_array as $object) :
+?>
+        <table>
+            <tr>
+                <td>
+                    <?php $object->showProduct(); ?>
+                </td>
+                <td>
+                    <form action="$_SERVER[PHP_SELF]" method="POST">
+                        <input type="submit" name="product_id" value="Купить">
+                    </form>
+                </td>
+            </tr>
+        </table>
+<?php
+        endforeach;
+    endforeach;
+?>
 
-//print_r($prod_arr);
-
-foreach ($prod_arr as $group => $Product_obj_array)
-print "\n $group";
-foreach($Product_obj_array as $key)
-print "\n $key _ $value";
+<?php //функции
+    function print_prod_db(array $prod_arr)
+    {
+        //выводим список продуктов по переданному массиву-корзине
+        foreach ($prod_arr as $group => $object_array) {
+            foreach ($object_array as $object)
+                $object->showProduct(); //10of10
+        }
+    }
 ?>
