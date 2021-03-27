@@ -12,7 +12,7 @@
 $num = 10;
 print "\nOriginal number: '$num'";
 
-print "\nCalling minusNumber(\$num)...";
+print "\nCalling 'minusNumber(\$num)'...";
 minusNumber($num);//в вызове способ передачи аргументов не указывается
  
 print "\nThe number after function call: '$num'";
