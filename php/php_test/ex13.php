@@ -7,6 +7,11 @@
     При повторном нажатие, если товар уже в корзине, то его количество должно увеличиваться на 1. 
     Снизу сделать вывод, что уже есть в корзине. 
 -->
+
+<?php //куки и сессии
+session_start();
+?>
+
 <?php //классы
 class Product
 {
@@ -22,7 +27,7 @@ class Product
         print "$this->price";
     }
 
-    protected static function getID() : int //абстрактный метод
+    protected static function getID(): int //абстрактный метод
     {
         static $last_id = 1; //сохраняем значение ID между вызовами
         $id = $last_id++;
@@ -31,9 +36,9 @@ class Product
 
     //метод-конструктор
     public static function createProduct(
-        string $new_name, 
-        float $new_price) : Product
-    {
+        string $new_name,
+        float $new_price
+    ): Product {
         $instance = new Product;
         if (isset($instance)) {
             //увеличиваем id только если объект создан успешно
@@ -45,41 +50,21 @@ class Product
         } else return 0;
     }
 }
-
-class Basket
-{
-    public $buy_arr = array(
-        'id' => array(),
-        'count' => array(),
-    );
-
-    public static function createBasket()
-    {
-        $instance = new Basket;
-        if (isset($instance)) {
-            $instance->buy_arr['id'] = 5;
-            $instance->buy_arr['count'] = 14;
-            return $instance;
-        } else return 0;
-    }
-
-    protected function add_product()
-    {
-        $basket['id'][] = $_POST['product_id'];
-        $basket['count'][]++;
-    }
-
-    public function showBasket()
-    {
-        foreach ($this->buy_arr as $key => $value)
-            print "\n{$key}_{$value}";
-    }
-}
 ?>
 
-<?php //код страницы
+<?php //функции
+function print_prod_db(array $prod_arr)
+{
+    //выводим список продуктов по переданному массиву-корзине
+    foreach ($prod_arr as $group => $object_array) {
+        foreach ($object_array as $object)
+            $object->showProduct(); //10of10
+    }
+}
 
-//ручная БД с продуктамии
+?>
+
+<?php //запросы к БД
 $prod_db = array(
     'bread' => array(
         Product::createProduct('bread1', 11),
@@ -96,12 +81,9 @@ $prod_db = array(
         Product::createProduct('sugar1', 66),
     ),
 );
-
 ?>
 
-<?php
-session_start();
-
+<?php //контент
 foreach ($prod_db as $group => $object_array) :
     foreach ($object_array as $object) :
 ?>
@@ -120,15 +102,4 @@ foreach ($prod_db as $group => $object_array) :
 <?php
     endforeach;
 endforeach;
-?>
-
-<?php //функции
-function print_prod_db(array $prod_arr)
-{
-    //выводим список продуктов по переданному массиву-корзине
-    foreach ($prod_arr as $group => $object_array) {
-        foreach ($object_array as $object)
-            $object->showProduct(); //10of10
-    }
-}
 ?>
