@@ -52,7 +52,6 @@ class Product
 ?>
 
 <?php //функции
-
 //возвращает результат проверки на наличие сохраненных сессий
 //если сохраненных сессий нет - формирует массивы 'id' и 'q' в $_SESSION
 function checkPrevSession()
@@ -63,10 +62,9 @@ function checkPrevSession()
         //print "Session have been initialized!"; //отладка
         $_SESSION['id'] = [];
         $_SESSION['q'] = []; //количество
-        return false;
+        return false; //первая сессия
     } else return true;
 }
-
 
 //возвращает список доступных продуктов из массива
 function printProdDB(array $prod_arr)
@@ -113,14 +111,18 @@ $prod_db = array(
     ),
 );
 //обработка запросов
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_prod_id'])) {
+if (
+    isset($_SERVER['REQUEST_METHOD']) &&
+    $_SERVER['REQUEST_METHOD'] == 'POST'
+    && isset($_POST['add_prod_id'])
+) {
     addToBasket($_POST['add_prod_id']); //добавляем в корзину по $_POST[]
 } else $_SERVER['PHP_SELF'];
 ?>
 
-
 <?php //контент: витрина 
 ?>
+
 <h1>Витрина</h1>
 <table border="1">
     <th>ID, наим., цена</th>
@@ -144,19 +146,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_prod_id'])) {
     <?php endforeach; ?>
 </table>
 
-
-<?php //контент: корзина 
+<?php if (checkPrevSession()) : //контент: корзина 
 ?>
-<h1>Корзина</h1>
-<table border="1">
-    <th>№</th>
-    <th>ID</th>
-    <th>Кол-во</th>
-    <?php foreach ($_SESSION['id'] as $position => $value) : ?>
-        <tr>
-            <td><?= ($position + 1); ?></td>
-            <td><?= $_SESSION['id'][$position]; ?></td>
-            <td><?= $_SESSION['q'][$position]; ?></td>
-        </tr>
-    <?php endforeach; ?>
-</table>
+    <h1>Корзина</h1>
+    <table border="1">
+        <th>№</th>
+        <th>ID</th>
+        <th>Кол-во</th>
+        <?php foreach ($_SESSION['id'] as $position => $value) : ?>
+            <tr>
+                <td><?= ($position + 1); ?></td>
+                <td><?= $_SESSION['id'][$position]; ?></td>
+                <td><?= $_SESSION['q'][$position]; ?></td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
+<?php endif; ?>

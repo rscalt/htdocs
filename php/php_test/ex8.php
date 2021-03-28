@@ -22,5 +22,3 @@ function checkValue(array $arr, string $str) : string
         }
     return "\n String '$str' is not found!";
 }
-
-?>

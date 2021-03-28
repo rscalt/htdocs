@@ -1,10 +1,3 @@
-<!-- 
-3. Создать функцию checkFunc(), в которую передавать один параметр. 
-    Если параметр не число - отдавать false, 
-    если число - проверить, больше ли оно 170, 
-        если больше - отдавать "Big", иначе - "Small".
- -->
-
 <?php
 
 $test_types = array(
@@ -23,14 +16,12 @@ foreach ($test_types as $type => $value) {
 }
 
 
-function check_size($arg) : string
+function check_size($arg)
 {
     if (is_int($arg) or is_double($arg)) {
         if ($arg > 170)
-            return "Big";
+            return "Big\n";
         else if ($arg <= 170)
-            return "Small";
-        
-    }
-    else return false;
+            return "Small\n";
+    } else return false;
 }

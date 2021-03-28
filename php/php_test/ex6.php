@@ -1,10 +1,9 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') //если получили POST-запрос
+if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') //если получили POST-запрос
     processShowForm(); //обрабатываем
 else
     showSearchForm(); //иначе выдаем дефолтную форму для заполнения
-
 
 function showSearchForm()
 {

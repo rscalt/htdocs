@@ -22,5 +22,3 @@ class Product
 
     $bread = Product::createProduct('MAKFA', 50);
     $bread->showPrice();
-
-?>

@@ -1,11 +1,11 @@
-<!-- 
-    11. Создать форму с input[type="file"]. В неё загружать файл. Сохранять его рядом в папку image если он расширения jpg или png, иначе отдавать ошибку. Проверку сделать в виде функции validateFile($name); 
--->
-
 <?php
 printForm();
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isUploadSuccess()) {
+if (
+    isset($_SERVER['REQUEST_METHOD'])
+    && $_SERVER['REQUEST_METHOD'] == 'POST'
+    && isUploadSuccess()
+) {
 
     print "<br>Проверка файла...";
 
@@ -80,4 +80,3 @@ function saveFile(): bool
     else
         return false;
 }
-?>

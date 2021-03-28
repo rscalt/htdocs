@@ -1,23 +1,15 @@
-<!-- 7. Создайте форму "Авторизация". 
-Сделайте input[type="text"], input[type="password"]. 
-Форма при отправке не должна добавлять данные в адресную строку. 
-В скрипте завести переменные $login, $password. 
-Если форма отправлена - проверять, 
-прошел ли человек авторизацию 
-по заданным в $login и $password значениям. 
-Если вошел - задавать в сессию ключ "LOGIN" и значение "YES". 
-Если этот ключ задан - вместо формы выводить "Привет, LOGIN!". -->
-
 <?php
 
 //sgrade_secure_db.pgsql
 $login = 'user';
 $password = 'pass';
 
-
 if (isset($_SESSION['LOGIN']) && $_SESSION['LOGIN'] == 'YES') //если вошли
     showGreetingPage();
-else if ($_SERVER['REQUEST_METHOD'] == 'POST') { //если отправили форму
+else if (
+    isset($_SERVER['REQUEST_METHOD']) &&
+    $_SERVER['REQUEST_METHOD'] == 'POST'
+) { //если отправили форму
     if (checkCredentials()) { //проверили реквизиты
         if (sessionUserLogIn()) //успешно вошли и создали сессию
             showGreetingPage();
@@ -50,11 +42,11 @@ function showLoginForm()
 }
 
 //проверка реквизитов пользователя
-function checkCredentials() : bool 
+function checkCredentials(): bool
 {
     $creds_correct = false;
     $creds_correct = ($_POST['f_login'] == $GLOBALS['login'] &&
-                     $_POST['f_password'] == $GLOBALS['password']);
+        $_POST['f_password'] == $GLOBALS['password']);
     return $creds_correct;
 }
 //вход и начало сессии
