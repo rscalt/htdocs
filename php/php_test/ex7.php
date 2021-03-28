@@ -11,31 +11,19 @@
 <?php
 
 //sgrade_secure_db.pgsql
-
-
-$login = 'ross';
+$login = 'user';
 $password = 'pass';
 
-show_page();
 
-function show_page()
-{
-    if ( $_SESSION['LOGIN'] == 'YES' ) {
-        showGreeting();
-        //sessionUserClearSession(); //для дебага
-    } else
-
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') //если форма отправлена...
-    {
-        checkCredentials(); //...проверяем прохождение авторизации
-        if (checkCredentials() == 1); {
-            sessionUserLogIn();  //...если вошел - задаем ключи
-                show_page();
-        }
-    } else 
-        showLoginForm(); //иначе выдаем дефолтную форму
-}
-
+if (isset($_SESSION['LOGIN']) && $_SESSION['LOGIN'] == 'YES') //если вошли
+    showGreetingPage();
+else if ($_SERVER['REQUEST_METHOD'] == 'POST') { //если отправили форму
+    if (checkCredentials()) { //проверили реквизиты
+        if (sessionUserLogIn()) //успешно вошли и создали сессию
+            showGreetingPage();
+        else print "<br>Error logging in or starting session!";
+    } else print "<br>Bad login/password!";
+} else showLoginForm(); //иначе выдаем дефолтную форму
 
 
 function showLoginForm()
@@ -61,31 +49,29 @@ function showLoginForm()
     _HTML_;
 }
 
-function checkCredentials()
+//проверка реквизитов пользователя
+function checkCredentials() : bool 
 {
-    //верный ввод
-    if ($_POST['f_login'] == $GLOBALS['login'] &&
-        $_POST['f_password'] == $GLOBALS['password'])
-        return 1;
-    else
-        print "Bad login/password!";
+    $creds_correct = false;
+    $creds_correct = ($_POST['f_login'] == $GLOBALS['login'] &&
+                     $_POST['f_password'] == $GLOBALS['password']);
+    return $creds_correct;
+}
+//вход и начало сессии
+function sessionUserLogIn(): bool
+{
+    if (session_start()) {
+        $_SESSION['LOGIN'] = 'YES';
+        $_SESSION['NAME'] = $GLOBALS['login'];
+        return true;
+    } else return false;
 }
 
-function sessionUserLogIn()
-//могут ли нам понадобится дополнительные параметры?
+//отображение страницы приветствия
+function showGreetingPage()
 {
-    session_start();
-    $_SESSION['LOGIN'] = 'YES';
-    $_SESSION['NAME'] = 'ross';
+    print <<< _HTML_
+    Привет, {$_SESSION['NAME']}!
+    _HTML_;
+    //$_SESSION = [];
 }
-function sessionUserClearSession()
-//могут ли нам понадобится дополнительные параметры?
-{
-    $_SESSION = [];
-}
-
-function showGreeting()
-{
-    print "Привет, {$_SESSION['NAME']}!";
-}
-
