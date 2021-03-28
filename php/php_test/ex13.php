@@ -1,7 +1,6 @@
 <?php //куки и сессии
 session_start();
 checkPrevSession();
-//$_SESSION = []; //отладка
 ?>
 
 <?php //классы
@@ -23,6 +22,15 @@ class Product
     public function GetProductID()
     {
         print "$this->id";
+    }
+
+    //возвращает имя объекта через его ID; принимает только массив объектов
+    public function GetProductNameByID($id, $db)
+    {
+        foreach ($db as $group => $object_array)
+            foreach ($object_array as $object)
+                if ($this->id == $id)
+                    return $this->name;
     }
 
     //возвращает ID для присвоения новому продукту
@@ -66,6 +74,11 @@ function checkPrevSession()
     } else return true;
 }
 
+function resetSession()
+{
+    $_SESSION = []; //отладка
+}
+
 //возвращает список доступных продуктов из массива
 function printProdDB(array $prod_arr)
 {
@@ -90,10 +103,21 @@ function addToBasket($post_id)
         return $_SERVER['PHP_SELF']; //обновляем страницу
     }
 }
+
+
+//выгружает наименование из db по указанной позиции
+//вспомогательная для корзины, и, скорее всего, будет переписана
+function NameLoader(&$prod_db, $position)
+{
+    foreach ($prod_db as $group => $object_array)
+        foreach ($object_array as $object)
+            echo $object->GetProductNameByID($_SESSION['id'][$position], $prod_db);
+}
+
 ?>
 
-<?php //данные и обработка запросов
-//данные из ""БД""
+<?php //данные; обработка запросов
+//данные из _db в виде массива объектов
 $prod_db = array(
     'bread' => array(
         Product::CreateProduct('bread1', 11),
@@ -110,19 +134,23 @@ $prod_db = array(
         Product::CreateProduct('sugar1', 66),
     ),
 );
+
 //обработка запросов
 if (
     isset($_SERVER['REQUEST_METHOD']) &&
     $_SERVER['REQUEST_METHOD'] == 'POST'
-    && isset($_POST['add_prod_id'])
 ) {
-    addToBasket($_POST['add_prod_id']); //добавляем в корзину по $_POST[]
+    if (isset($_POST['add_prod_id']))
+        addToBasket($_POST['add_prod_id']); //добавляем в корзину по $_POST[]
+    else if (isset($_POST['resetSession']) && $_POST['resetSession'] = 1) {
+        resetSession();
+        $_SERVER['PHP_SELF'];
+    }
 } else $_SERVER['PHP_SELF'];
 ?>
 
 <?php //контент: витрина 
 ?>
-
 <h1>Витрина</h1>
 <table border="1">
     <th>ID, наим., цена</th>
@@ -152,13 +180,19 @@ if (
     <table border="1">
         <th>№</th>
         <th>ID</th>
+        <th>Наим-е</th>
         <th>Кол-во</th>
         <?php foreach ($_SESSION['id'] as $position => $value) : ?>
             <tr>
                 <td><?= ($position + 1); ?></td>
                 <td><?= $_SESSION['id'][$position]; ?></td>
+                <td> <?= NameLoader($prod_db, $position); ?></td>
                 <td><?= $_SESSION['q'][$position]; ?></td>
             </tr>
         <?php endforeach; ?>
     </table>
+    <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST">
+        <button name="resetSession" value=1> Очистить корзину </button>
+    </form>
+
 <?php endif; ?>
